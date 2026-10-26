@@ -448,7 +448,7 @@ class Command(BaseCommand):
         # Project archived in Coldfront django
         if project.status.name in ["Archived"]:
             # archive OU is setup to archive projects
-            if PROJECT_OPENLDAP_ARCHIVE_OU and PROJECT_OPENLDAP_REMOVE_PROJECT:
+            if PROJECT_OPENLDAP_ARCHIVE_OU:
                 # project is in project OU not archive OU - DNs supplied - apart from relative, generated in function
                 if ldapsearch_project_result and not ldapsearch_project_result_archive:
                     self.handle_project_in_openldap_but_not_archive(
@@ -464,7 +464,7 @@ class Command(BaseCommand):
                     self.handle_missing_project_in_openldap_archive(project, project_dn, sync, write_to_archive)
                     return
             # archive OU is not setup, remove project
-            elif not PROJECT_OPENLDAP_ARCHIVE_OU and PROJECT_OPENLDAP_REMOVE_PROJECT:
+            elif PROJECT_OPENLDAP_REMOVE_PROJECT:
                 # project is in project OU, needs removed, use project's ou_dn - supplied - only this is needed here
                 if ldapsearch_project_result:
                     self.handle_project_removal_if_needed(project, project_ou_dn, sync)
