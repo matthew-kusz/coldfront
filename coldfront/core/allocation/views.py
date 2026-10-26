@@ -222,7 +222,7 @@ class AllocationDetailView(LoginRequiredMixin, UserPassesTestMixin, TemplateView
         )
 
         if not self.request.user.is_superuser:
-            messages.success(request, "You do not have permission to update the allocation")
+            messages.error(request, "You do not have permission to update the allocation")
             return redirect(allocation_obj)
 
         initial_data = {
