@@ -920,12 +920,11 @@ class AllocationRemoveUsersView(LoginRequiredMixin, UserPassesTestMixin, Templat
             for form in formset:
                 user_form_data = form.cleaned_data
                 if user_form_data["selected"]:
-                    remove_users_count += 1
-
                     user_obj = get_user_model().objects.get(username=user_form_data.get("username"))
                     if allocation_obj.project.pi == user_obj:
                         continue
 
+                    remove_users_count += 1
                     allocation_obj.remove_user(user_obj, signal_sender=self.__class__)
 
             user_plural = "user" if remove_users_count == 1 else "users"
