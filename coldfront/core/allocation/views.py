@@ -217,9 +217,6 @@ class AllocationDetailView(LoginRequiredMixin, UserPassesTestMixin, TemplateView
     def post(self, request, *args, **kwargs):
         pk = self.kwargs.get("pk")
         allocation_obj = get_object_or_404(Allocation.objects.select_related("status", "project", "project__pi"), pk=pk)
-        allocation_users = allocation_obj.allocationuser_set.exclude(status__name__in=["Removed"]).order_by(
-            "user__username"
-        )
 
         if not self.request.user.is_superuser:
             messages.error(request, "You do not have permission to update the allocation")
