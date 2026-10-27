@@ -813,7 +813,7 @@ class AllocationAddUsersView(LoginRequiredMixin, UserPassesTestMixin, TemplateVi
         if not formset.is_valid():
             for error in formset.errors:
                 messages.error(request, error)
-            return redirect
+            return redirect(allocation_obj)
         for form in formset:
             user_form_data = form.cleaned_data
             if user_form_data["selected"]:
