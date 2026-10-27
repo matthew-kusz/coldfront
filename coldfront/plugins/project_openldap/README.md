@@ -199,7 +199,7 @@ PROJECT_INSTITUTION_EMAIL_MAP=coldfront.ac.uk=ColdfrontUniversity
 | `PROJECT_OPENLDAP_OU` | str | empty str |The OU where projects will be written, requires a string DN of OU.   |
 | `PROJECT_OPENLDAP_BIND_USER` | str | empty str |The bind user, that can write to the `PROJECT_OPENLDAP_OU`, requires a string DN of bind user. |
 | `PROJECT_OPENLDAP_BIND_PASSWORD` | str | empty str |The password for the bind user, requires a string. |
-| `PROJECT_OPENLDAP_REMOVE_PROJECT` | Bool |True | Required to take action upon archive (action) of a project. Default True (bool). |
+| `PROJECT_OPENLDAP_REMOVE_PROJECT` | Bool | True | By default this is True and if `PROJECT_OPENLDAP_ARCHIVE_OU` is not defined, then upon archival action, delete the project object in OpenLDAP.  Default True (bool). |
 
 **OpenLDAP specific:**
 | Option | Type | Default | Description |
@@ -215,7 +215,7 @@ PROJECT_INSTITUTION_EMAIL_MAP=coldfront.ac.uk=ColdfrontUniversity
 
 | Option | Type | Default | Description |
 |--- | --- | --- | --- |
-| `PROJECT_OPENLDAP_ARCHIVE_OU` | str | empty str | Optional, if this string is defined, then move upon archival action move the project object in OpenLDAP here. Supply a string DN of the desired OU. |
+| `PROJECT_OPENLDAP_ARCHIVE_OU` | str | empty str | Optional, if this string is defined, then upon archival action, move the project object in OpenLDAP here. Supply a string DN of the desired OU. |
 | `PROJECT_OPENLDAP_DESCRIPTION_TITLE_LENGTH` | int | 100 | Optional, this integer will constrain the length of the Coldfront project title, within the OpenLDAP project description field. |
 
 
