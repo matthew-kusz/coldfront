@@ -976,7 +976,7 @@ class ProjectRemoveUsersView(LoginRequiredMixin, UserPassesTestMixin, TemplateVi
             formset = formset(initial=users_to_remove, prefix="userform")
             context["formset"] = formset
 
-        context["project"] = get_object_or_404(Project, pk=pk)
+        context["project"] = project_obj
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
