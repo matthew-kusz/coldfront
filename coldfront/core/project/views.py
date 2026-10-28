@@ -637,7 +637,7 @@ class ProjectUpdateView(SuccessMessageMixin, LoginRequiredMixin, UserPassesTestM
             "New",
         ]:
             messages.error(request, "You cannot update an archived project.")
-            return redirect(project_obj.pk)
+            return redirect(project_obj)
         else:
             return super().dispatch(request, *args, **kwargs)
 
@@ -672,7 +672,7 @@ class ProjectAddUsersSearchView(LoginRequiredMixin, UserPassesTestMixin, Templat
             "New",
         ]:
             messages.error(request, "You cannot add users to an archived project.")
-            return redirect(project_obj.pk)
+            return redirect(project_obj)
         else:
             return super().dispatch(request, *args, **kwargs)
 
@@ -709,7 +709,7 @@ class ProjectAddUsersSearchResultsView(LoginRequiredMixin, UserPassesTestMixin, 
             "New",
         ]:
             messages.error(request, "You cannot add users to an archived project.")
-            return redirect(project_obj.pk)
+            return redirect(project_obj)
         else:
             return super().dispatch(request, *args, **kwargs)
 
@@ -808,7 +808,7 @@ class ProjectAddUsersView(LoginRequiredMixin, UserPassesTestMixin, View):
             "New",
         ]:
             messages.error(request, "You cannot add users to an archived project.")
-            return redirect(project_obj.pk)
+            return redirect(project_obj)
         else:
             return super().dispatch(request, *args, **kwargs)
 
