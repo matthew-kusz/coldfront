@@ -768,15 +768,15 @@ class ProjectAddUsersSearchResultsView(LoginRequiredMixin, UserPassesTestMixin, 
                     users_already_in_project.append(ele)
             context["users_already_in_project"] = users_already_in_project
 
+        initial_data = self.get_initial_data(project_obj)
         # The following block of code is used to hide/show the allocation div in the form.
-        if project_obj.allocation_set.filter(status__name__in=["Active", "New", "Renewal Requested"]).exists():
+        if initial_data:
             div_allocation_class = "placeholder_div_class"
         else:
             div_allocation_class = "d-none"
         context["div_allocation_class"] = div_allocation_class
         ###
 
-        initial_data = self.get_initial_data(project_obj)
         allocation_formset = formset_factory(ProjectAddUsersToAllocationForm, max_num=len(initial_data))
         allocation_formset = allocation_formset(initial=initial_data, prefix="allocationform")
 
