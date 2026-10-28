@@ -1056,14 +1056,18 @@ class ProjectUserDetail(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             "New",
         ]:
             messages.error(request, "You cannot update a user in an archived project.")
-            return HttpResponseRedirect(reverse("project-user-detail", kwargs={"pk": project_user_pk}))
+            return HttpResponseRedirect(
+                reverse("project-user-detail", kwargs={"pk": project_obj.pk, "project_user_pk": project_user_pk})
+            )
 
         if project_obj.projectuser_set.filter(id=project_user_pk).exists():
             project_user_obj = project_obj.projectuser_set.get(pk=project_user_pk)
 
             if project_user_obj.user == project_user_obj.project.pi:
                 messages.error(request, "PI role and email notification option cannot be changed.")
-                return HttpResponseRedirect(reverse("project-user-detail", kwargs={"pk": project_user_pk}))
+                return HttpResponseRedirect(
+                    reverse("project-user-detail", kwargs={"pk": project_obj.pk, "project_user_pk": project_user_pk})
+                )
 
             project_user_update_form = ProjectUserUpdateForm(
                 request.POST,
