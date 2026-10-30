@@ -1214,7 +1214,7 @@ class ProjectReviewView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         project_obj.force_review = False
         project_obj.save()
 
-        domain_url = get_domain_url(self.request)
+        domain_url = get_domain_url(request)
         project_review_list_url = "{}{}".format(domain_url, reverse("project-review-list"))
         project_url = "{}{}".format(domain_url, project_obj.get_absolute_url())
 

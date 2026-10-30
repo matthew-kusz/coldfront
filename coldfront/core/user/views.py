@@ -90,7 +90,7 @@ class UserProjectsManagersView(ListView):
         if viewed_username:
             self.viewed_user = get_object_or_404(User, username=viewed_username)
         else:
-            self.viewed_user = self.request.user
+            self.viewed_user = request.user
 
         return super().dispatch(request, *args, viewed_username=viewed_username, **kwargs)
 

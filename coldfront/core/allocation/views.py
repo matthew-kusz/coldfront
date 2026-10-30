@@ -205,7 +205,7 @@ class AllocationDetailView(LoginRequiredMixin, UserPassesTestMixin, TemplateView
         }
 
         form = AllocationUpdateForm(initial=initial_data)
-        if not self.request.user.is_superuser:
+        if not request.user.is_superuser:
             form.fields["is_locked"].disabled = True
             form.fields["is_changeable"].disabled = True
 
@@ -218,7 +218,7 @@ class AllocationDetailView(LoginRequiredMixin, UserPassesTestMixin, TemplateView
         pk = self.kwargs.get("pk")
         allocation_obj = get_object_or_404(Allocation.objects.select_related("status", "project", "project__pi"), pk=pk)
 
-        if not self.request.user.is_superuser:
+        if not request.user.is_superuser:
             messages.error(request, "You do not have permission to update the allocation")
             return redirect(allocation_obj)
 
@@ -280,7 +280,7 @@ class AllocationDetailView(LoginRequiredMixin, UserPassesTestMixin, TemplateView
                 allocation_obj,
                 "Allocation Activated",
                 "email/allocation_activated.txt",
-                domain_url=get_domain_url(self.request),
+                domain_url=get_domain_url(request),
             )
             if action != "auto-approve":
                 messages.success(request, "Allocation Activated!")
@@ -300,7 +300,7 @@ class AllocationDetailView(LoginRequiredMixin, UserPassesTestMixin, TemplateView
                     allocation_obj,
                     "Allocation Denied",
                     "email/allocation_denied.txt",
-                    domain_url=get_domain_url(self.request),
+                    domain_url=get_domain_url(request),
                 )
                 messages.success(request, "Allocation Denied!")
             elif allocation_obj.status.name == "Revoked":
@@ -308,7 +308,7 @@ class AllocationDetailView(LoginRequiredMixin, UserPassesTestMixin, TemplateView
                     allocation_obj,
                     "Allocation Revoked",
                     "email/allocation_revoked.txt",
-                    domain_url=get_domain_url(self.request),
+                    domain_url=get_domain_url(request),
                 )
                 messages.success(request, "Allocation Revoked!")
             else:
@@ -386,15 +386,15 @@ class AllocationEULAView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         allocation_users = allocation_obj.allocationuser_set.exclude(
             status__name__in=["Removed", "DeclinedEULA"]
         ).order_by("user__username")
-        user_in_allocation = allocation_users.filter(user=self.request.user).exists()
+        user_in_allocation = allocation_users.filter(user=request.user).exists()
         if user_in_allocation:
-            allocation_user_obj = get_object_or_404(AllocationUser, allocation=allocation_obj, user=self.request.user)
+            allocation_user_obj = get_object_or_404(AllocationUser, allocation=allocation_obj, user=request.user)
             action = request.POST.get("action")
             if action not in ["accepted_eula", "declined_eula"]:
                 return HttpResponseBadRequest("Invalid request")
             if "accepted_eula" in action:
                 allocation_user_obj.status = AllocationUserStatusChoice.objects.get(name="Active")
-                messages.success(self.request, "EULA Accepted!")
+                messages.success(request, "EULA Accepted!")
                 if EMAIL_ALLOCATION_EULA_CONFIRMATIONS:
                     project_user = allocation_user_obj.allocation.project.projectuser_set.get(
                         user=allocation_user_obj.user
@@ -412,7 +412,7 @@ class AllocationEULAView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             elif action == "declined_eula":
                 allocation_user_obj.status = AllocationUserStatusChoice.objects.get(name="DeclinedEULA")
                 messages.warning(
-                    self.request,
+                    request,
                     "You did not agree to the EULA and were removed from the allocation. To access this allocation, your PI will have to re-add you.",
                 )
                 if EMAIL_ALLOCATION_EULA_CONFIRMATIONS:
@@ -721,7 +721,7 @@ class AllocationAddUsersView(LoginRequiredMixin, UserPassesTestMixin, TemplateVi
         allocation_obj = get_object_or_404(Allocation.objects.select_related("status"), pk=self.kwargs.get("pk"))
 
         message = None
-        if allocation_obj.is_locked and not self.request.user.is_superuser:
+        if allocation_obj.is_locked and not request.user.is_superuser:
             message = "You cannot modify this allocation because it is locked! Contact support for details."
         elif allocation_obj.status.name not in [
             "Active",
@@ -780,7 +780,7 @@ class AllocationAddUsersView(LoginRequiredMixin, UserPassesTestMixin, TemplateVi
 
         context["allocation"] = allocation_obj
 
-        user_resources = get_user_resources(self.request.user)
+        user_resources = get_user_resources(request.user)
         resources_with_eula = {}
         for res in user_resources:
             if res in allocation_obj.get_resources_as_list:
@@ -847,7 +847,7 @@ class AllocationRemoveUsersView(LoginRequiredMixin, UserPassesTestMixin, Templat
         allocation_obj = get_object_or_404(Allocation.objects.select_related("status"), pk=self.kwargs.get("pk"))
 
         message = None
-        if allocation_obj.is_locked and not self.request.user.is_superuser:
+        if allocation_obj.is_locked and not request.user.is_superuser:
             message = "You cannot modify this allocation because it is locked! Contact support for details."
         elif allocation_obj.status.name not in [
             "Active",
@@ -1236,7 +1236,7 @@ class AllocationRenewView(LoginRequiredMixin, UserPassesTestMixin, TemplateView)
                 allocation_obj,
                 "Allocation Renewed",
                 "email/allocation_renewed.txt",
-                domain_url=get_domain_url(self.request),
+                domain_url=get_domain_url(request),
             )
             messages.success(request, "Allocation renewed successfully")
         else:
@@ -1632,7 +1632,7 @@ class AllocationChangeDetailView(LoginRequiredMixin, UserPassesTestMixin, FormVi
         allocation_change_form.fields["justification"].disabled = True
         if allocation_change_obj.status.name != "Pending":
             allocation_change_form.fields["end_date_extension"].disabled = True
-        if not self.request.user.is_staff and not self.request.user.is_superuser:
+        if not request.user.is_staff and not request.user.is_superuser:
             allocation_change_form.fields["end_date_extension"].disabled = True
 
         note_form = AllocationChangeNoteForm(initial={"notes": allocation_change_obj.notes})
@@ -1645,7 +1645,7 @@ class AllocationChangeDetailView(LoginRequiredMixin, UserPassesTestMixin, FormVi
 
     def post(self, request, *args, **kwargs):
         pk = self.kwargs.get("pk")
-        if not self.request.user.is_superuser:
+        if not request.user.is_superuser:
             messages.error(request, "You do not have permission to update an allocation change request")
             return HttpResponseRedirect(reverse("allocation-change-detail", kwargs={"pk": pk}))
 
@@ -1707,7 +1707,7 @@ class AllocationChangeDetailView(LoginRequiredMixin, UserPassesTestMixin, FormVi
                 allocation_change_obj.allocation,
                 "Allocation Change Denied",
                 "email/allocation_change_denied.txt",
-                domain_url=get_domain_url(self.request),
+                domain_url=get_domain_url(request),
             )
 
             return HttpResponseRedirect(reverse("allocation-change-detail", kwargs={"pk": pk}))
@@ -1798,7 +1798,7 @@ class AllocationChangeDetailView(LoginRequiredMixin, UserPassesTestMixin, FormVi
                 allocation_change_obj.allocation,
                 "Allocation Change Approved",
                 "email/allocation_change_approved.txt",
-                domain_url=get_domain_url(self.request),
+                domain_url=get_domain_url(request),
             )
 
         return HttpResponseRedirect(reverse("allocation-change-detail", kwargs={"pk": pk}))
@@ -2003,7 +2003,7 @@ class AllocationChangeView(LoginRequiredMixin, UserPassesTestMixin, FormView):
             "New Allocation Change Request",
             "email/new_allocation_change_request.txt",
             url_path=reverse("allocation-change-list"),
-            domain_url=get_domain_url(self.request),
+            domain_url=get_domain_url(request),
         )
         return redirect(allocation_obj)
 
